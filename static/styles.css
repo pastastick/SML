@@ -1,0 +1,88 @@
+/* static/styles.css */
+body {
+    font-family: Arial, sans-serif;
+    letter-spacing: 0.5px;
+    max-width: 800px; /* Membatasi lebar konten agar tidak terlalu lebar */
+    margin: 0 auto; /* Membuat body berada di tengah secara horizontal */
+    padding: 20px; /* Memberikan ruang di sekitar konten */
+    line-height: 1.6; /* Jarak antar baris yang nyaman dibaca */
+    color: #333; /* Warna teks yang lembut */
+    background-color: #f8faf9;
+}
+
+h2 {
+    text-align: center; /* Judul utama di tengah */
+    color: #01416b; /* Warna gelap untuk kontras */
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+h3 {
+    color: #01416b; /* Warna sedikit lebih terang dari h2 */
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 22px;
+    text-align: left; /* Subjudul di tengah */
+}
+
+p {
+    text-align: justify; /* Teks rata kiri-kanan untuk keterbacaan */
+    margin-bottom: 14px;
+}
+
+figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+figcaption{
+    text-align: center;
+    font-size: 14px;
+    color: #5e5e5e;
+    padding-top: 10px;
+    max-width: 400px;
+}
+
+ul, ol {
+    margin-left: 20px; /* Memberikan indentasi pada list */
+    margin-bottom: 20px;
+}
+
+li {
+    margin-bottom: 10px; /* Jarak antar item dalam list */
+}
+
+/* Styling khusus untuk elemen matematika dari MathJax */
+.MathJax, .MathJax_Display {
+    text-align: center !important; /* Memastikan rumus matematika berada di tengah */
+    margin: 10px 0; /* Jarak atas dan bawah untuk rumus */
+}
+
+/* Styling untuk kode inline seperti beta dan epsilon */
+b, i {
+    color: #236c9c; /* Warna biru untuk elemen penting */
+}
+
+/* Responsivitas untuk layar kecil */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+}
