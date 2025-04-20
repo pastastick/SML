@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVM part 1</title>
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <h2>Maximal Margin Classifier</h2>
+    <h3>What Is a Hyperplane?</h3>
+    <p>
+        Dalam ruang berdimensi-\(p\), hyperplane adalah suatu batas atau pemisah yang berdimensi \(p-1\).
+        Contoh:
+        <ul> 
+            <li>Pada ruang 2 dimensi &rarr; Hyperplane merupakan pemisah dengan bentuk garis lurus (1 dimensi).</li>
+            <li>Pada ruang 3 dimensi &rarr; Hyperplane merupakan pemisah dengan bentuk bidang datar (2 dimensi).</li>
+            <li>Pada dimensi lebih tinggi \(p>3\) &rarr; Hyperplane tetap merupakan suatu batas berdimensi \(p-1\) yang menjadi pemisah di ruang tersebut.</li>
+        </ul>
+        Hyperplane pada ruang berdimensi-\(p\) dapat didefinisikan oleh persamaan:
+        \[
+            \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p = 0 \tag{1.1}
+        \]
+        dimana \(\beta_0,\dots, \beta_p\) adalah parameter dan \(X = \begin{bmatrix} X_1, X_2, \dots, X_p \end{bmatrix}^{T}\)
+        merupakan matriks \(n \times p\) yang teridiri dari kumpulan titik-titik pada ruang berdimensi-\(p\).
+        \[
+            \mathbf{X} =
+            \begin{bmatrix}
+            x_{11} & x_{12} & \dots  & x_{n1} \\
+            x_{21} & x_{22} & \dots  & x_{n2} \\
+            \vdots & \vdots & \ddots & \vdots \\
+            x_{1p} & x_{2p} & \dots  & x_{np}
+            \end{bmatrix}
+        \]
+        Ketika X memenuhi persamaan diatas(1.1), maka X terletak pada hyperplane.
+        Sekarang jika X tidak memenuhi, ini menunjukkan bahwa X berada di satu sisi hyperplane:
+        \[
+            \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p > 0
+        \]
+        dan berada di sisi lainnya jika:
+        \[
+            \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p < 0
+        \]
+    </p>
+    <h3>Classification Using a Separating Hyperplane</h3>
+    <figure>
+        <img src="assets/contoh2.png" alt="contoh hyperplane" width="600">
+        <figcaption>Fig 1: Hyperplane \(3X_1 + 10X_2 - 1 = 0\) yang membagi 2 kelas yaitu merah dan biru.</figcaption>
+    </figure>
+    <p>
+        <b>Contoh:</b><br>
+        Pada ruang 2 dimensi terdapat 2 kelas yaitu, \(y_1, \dots, y_n \epsilon \{-1, 1\}\) dimana -1 mempresentasikan satu kelas dan 1 adalah kelas lainnya. 
+        Persamaan hyperplane dapat dituliskan sebagai:
+        \[
+            -1 + 3 X_1 + 10 X_2 = 0
+        \]
+        dengan \(\beta_0,\dots, \beta_p\) adalah parameter dan X merupakan matriks yang terdiri dari:
+        \[
+        \mathbf{x_1} =
+            \begin{bmatrix}
+            2.4967 & 1.8617 \\
+            2.6477 & 3.5230 \\
+            1.7658 & 1.7659 \\
+            3.5792 & 2.7674 
+            \end{bmatrix}
+            , \quad
+            \mathbf{x_2} =
+            \begin{bmatrix}
+            -2.4694 & -1.4574 \\
+            -2.4634 & -2.4657 \\
+            -1.7580 & -3.9132 \\
+            -3.7249 & -2.5622 
+            \end{bmatrix}            
+        \]
+        Sehingga matriks X dapat kita tulis:
+        \[
+            \mathbf{X} =
+            \begin{bmatrix}
+            2.4967 & 2.6477 & 1.7658 & 3.5792 & -2.4694 & -2.463 & -1.7580 & -3.7249 \\
+            1.8617 & 3.5230 & 1.7659 & 2.7674 & -1.4574 & -2.4657 & -3.913 & -2.5622
+            \end{bmatrix}
+        \]
+        dari setiap nilai \(x^*\) di matriks X kita masukkan ke persamaan untuk menentukan kelas masing-masing titik di bidang 2 dimensi tersebut.
+        Jika \(y_i = -1\) maka kita kategorikan sebagai warna <b>merah</b> dan \(y_i = 1\) sebagai warna <b>biru</b>.
+        \[
+            \text{jika } \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_p x_{ip} > 0, \text{ maka } y_i = 1 \text{ (biru)}, \\
+            \text{jika } \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_p x_{ip} < 0, \text{ maka } y_i = -1 \text{ (merah)}.
+        \]
+        untuk semua \(i = 1,\dots, n\).
+    </p>
+    <figure>
+        <img src="assets/svm_anim3.gif" alt="contoh hyperplane" width="600">
+        <figcaption>Fig 2: Banyaknya kemungkinan terbentuknya hyperplane optimal.</figcaption>
+    </figure>
+    <p>
+        Hyperplane sangat bergantung terhadap parameter atau \(\beta\), yang mana ada banyak opsi nilai \(\beta\) 
+        yang dapat kita gunakan untuk membuat hyperplane optimal(memisahkan kelas secara sempurna) yang dapat menyebabkan infinite hyperplane (seperti pada gambar), 
+        lalu bagaimana cara agar kita bisa menentukan persamaan hyperplane yang optimal?
+    </p>
+    <h3>The Maximal Margin Classifier</h3>
+    <p>
+        Mencari maksimal margin antara hyperplane dengan data yang memiliki jarak terdekat dengan hyperplane dibandingkan data yang lain. 
+        Hyperplane ini dibantu oleh support vectors.
+        ketika dimensi p meningkat, karena terlalu fokus pada margin maksimal dapat membuat model <i>overfitting</i>.
+    </p>
+    <figure>
+        <img src="assets/contoh_margin.png" alt="contoh hyperplane" width="600">
+        <figcaption>
+            Fig 3: Hyperplane optimal \(1.00304533X_1 + 0.63402127X_2 - 0.12797095171981723 = 0\) yang membagi 2 kelas yaitu merah dan biru.
+            Margin adalah jarak dari garis padat ke salah satu garis putus-putus.
+            Dua titik biru dan titik merah yang terletak pada garis putus-putus adalah vektor pendukung, 
+            dan jarak dari titik-titik tersebut ke hyperplane ditunjukkan dengan garis hitam tipis.
+        </figcaption>
+    </figure>
+    <p>
+        <b>Contoh menghitung Maximal Margin:</b><br>
+        Mencari hyperplane \(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p = 0\) yang memaksimalkan margin \(M\)
+        <br>
+        dengan syarat,
+        \[
+            \sum_{j=1}^{p} \beta_j^2 = 1 \quad \text{(normalisasi)}.\\
+            y_i \left( \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_p x_{ip} \right) \geq M \quad \forall i = 1, \dots, n.
+        \]
+        Misalkan kita punya data 2D (\(p = 2\)) dengan 4 observasi:
+
+        <ul>
+            <li>
+                \(y_i = 1: (1,1),(2,2)\)
+            </li>
+            <li>
+                \(y_i = -1: (3,4),(4,3)\)
+            </li>
+        </ul>
+
+        Syarat:
+        <ol>
+            <li>
+                Untuk \(y_i=1: (1,1)\)
+                \[
+                    1 \cdot (\beta_0 + \beta_1 \cdot 1+ \beta_2 \cdot 1) \geq M 
+                \]
+            </li>
+            <li>
+                Untuk \(y_i=1: (2,2)\)
+                \[
+                    1 \cdot (\beta_0 + \beta_1 \cdot 2 + \beta_2 \cdot 2) \geq M 
+                \]
+            </li>
+            <li>
+                Untuk \(y_i=-1: (3,4)\)
+                \[
+                    -1 \cdot (\beta_0 + \beta_1 \cdot 3 + \beta_2 \cdot 4) \geq M 
+                \]
+            </li>
+            <li>
+                Untuk \(y_i=-1: (4,3)\)
+                \[
+                    -1 \cdot (\beta_0 + \beta_1 \cdot 4 + \beta_2 \cdot 3) \geq M 
+                \]
+            </li>
+        </ol>
+        Normalisasi:
+        \[
+            \beta_1^2 + \beta_2^2 = 1
+        \]
+
+        Untuk memaksimalkan \(M\), kita harus asumsikan \(M\) adalah nilai terkecil dari sisi kiri agar keempat syarat terpenuhi.
+        \[
+            M = \min(\beta_0 + \beta_1 + \beta_2, \beta_0 + 2\beta_1 + 2\beta_2, -\beta_0 - 3\beta_1 - 4\beta_2, -\beta_0 - 4\beta_1 - 3\beta_2)
+        \]
+        kita dapat menggunakan metode numerik (seperti gradient descent). Misal setelah iterasi, kita peroleh:
+        \[
+            \beta_0 = 1, \beta_1 = 2, \beta_2 = -3
+        \]
+        Hitung margin:
+        <ol>
+            <li>Untuk \( (1,1) \):
+                \[
+                \beta_0 + \beta_1 \cdot 1 + \beta_2 \cdot 1 = 1 + 2 \cdot 1 - 3 \cdot 1 = 0
+                \]
+            </li>
+                
+            <li>Untuk \( (2,2) \):
+                \[
+            \beta_0 + \beta_1 \cdot 2 + \beta_2 \cdot 2 = 1 + 2 \cdot 2 - 3 \cdot 2 = -1
+            \]
+            </li>
+            
+            <li>Untuk \( (3,4) \):
+                \[
+            \beta_0 + \beta_1 \cdot 3 + \beta_2 \cdot 4 = 1 + 2 \cdot 3 - 3 \cdot 4 = -5
+            \]
+            </li>
+            
+            <li>Untuk \( (4,3) \):
+                \[
+            \beta_0 + \beta_1 \cdot 4 + \beta_2 \cdot 3 = 1 + 2 \cdot 4 - 3 \cdot 3 = 0
+            \]
+            </li>
+        </ol>
+        Margin \( M \) adalah nilai terkecil dari hasil di atas:
+        \[
+            M = \min(0, -1, -5, 0) = -5
+        \]
+        Normalisasi Ulang:
+        <p>Karena \( M \) negatif, kita perlu menormalisasi ulang \( \beta \) untuk memastikan \( M \) positif. Misalkan kita bagi semua \( \beta \) dengan \( -5 \):</p>
+        \[
+            \beta_0 = \frac{1}{-5} = -0.2, \quad
+            \beta_1 = \frac{2}{-5} = -0.4, \quad
+            \beta_2 = \frac{-3}{-5} = 0.6
+        \]
+        Hyperplane optimal:
+        \[
+            -0,2 - 0,4X_1 + 0,6X_2 = 0
+        \]
+    </p>
+    <p>
+        Maximal Margin Classifier merupakan cara ampuh untuk klasifikasi <i>jika terdapat hyperplane yang memisahkan secara optimal</i>. 
+        Apabila data antar kelas bercamput seperti pada gambar, kita tidak dapat memisahkan kelas secara optimal. 
+    </p>
+    <h2>Support Vector Classifiers</h2>
+    <p>
+        Observasi dari dua kelas tidak selalu dapat dipisahkan oleh sebuah hyperplane. 
+        Meskipun hyperplane pemisah ada, pengklasifikasian berdasarkan hyperplane ini mungkin tidak ideal karena:
+        <ul>
+            <li>
+                Klasifikator berbasis hyperplane pemisah akan memastikan semua observasi pelatihan diklasifikasikan dengan sempurna, tetapi hal ini dapat menyebabkan sensitivitas terhadap setiap observasi individu.
+            </li>
+            <li>
+                Hyperplane margin maksimal sangat sensitif terhadap perubahan pada satu observasi, yang menunjukkan kemungkinan overfitting terhadap data pelatihan.
+            </li>
+        </ul>
+
+        Untuk mengatasi masalah tersebut, kita dapat mempertimbangkan penggunaan klasifikator berbasis hyperplane yang tidak memisahkan kedua kelas secara sempurna,
+        yaitu dengan <b>Support Vector Classifier</b>(SVC).<br>
+        Support Vector Classifier (SVC) terkadang disebut <b>soft margin</b>, yaitu margin yang memperbolehkan beberapa observasi melanggar aturan pemisahan 
+        (memperbolehkan beberapa observasi berada di sisi salah dari margin atau bahkan di sisi salah dari hyperplane itu sendiri) sehingga:
+        <ul>
+            <li>
+                Lebih robust terhadap observasi individu.
+            </li>
+            <li>
+                Meningkatkan klasifikasi untuk sebagian besar observasi pelatihan.
+            </li>
+        </ul>
+    </p>
+    <figure>
+        <img src="assets/svm_animation4.gif" alt="contoh hyperplane" width="600">
+        <figcaption>
+            Fig 4: Support Vector Classifier yang dibentuk berdasarkan nilai \(C\) dari 0.01 hingga 100.
+            Ketika \(C\) besar, berarti penalti yang tinggi untuk pengamatan berada di sisi margin yang salah, sehingga margin menyempit. 
+            Saat \(C\) menurun, penalti untuk pengamatan berada di sisi margin yang salah menurun, sehingga marginnya besar.
+        </figcaption>
+    </figure>
+    <h3>Perhitungan Support Vector Classifier</h3>
+    <p>
+        Mencari hyperplane \(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p = 0\) yang memisahkan antar kelas dengan <b>maksimum margin</b>,
+        tetapi memperbolehkan beberapa kesalahan klasifikasi melalui <b><i>slack variables</i></b> \(\varepsilon_i\).
+        <br>
+        Fokus:
+        \[
+            \begin{aligned}
+                &\text{maximize} \qquad M \\
+                &{\scriptstyle \beta_0, \beta_1, \dots, \beta_p, \epsilon_1, \dots, \epsilon_m, M}
+            \end{aligned}
+        \]
+        Syarat:
+        
+        \[
+            \sum_{j=1}^{p} \beta_j^2 = 1 \quad \text{(normalisasi)}, \\
+            y_i \left( \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_p x_{ip} \right) \geq M(1-\varepsilon_i) \quad \forall i = 1, \dots, n, \\
+            \varepsilon_i \geq 0 \quad \forall i = 1, \dots, n,\\ 
+            \sum_{i=1}^{n} \varepsilon_i \leq C \ \text{(kapasitas kesalahan)},
+        \]
+        di mana C adalah <i>nonnegative tuning parameter</i>.
+    </p>
+    <p>
+        Misalkan kita punya data 2D (\(p = 2\)) dengan 4 observasi:
+
+        <ul>
+            <li>
+                \(y_i = 1: (1,1),(2,2)\)
+            </li>
+            <li>
+                \(y_i = -1: (3,4),(4,3)\)
+            </li>
+        </ul>
+
+        Syarat:
+        <ol>
+            <li>
+                Untuk \(y_i=1: (1,1)\)
+                \[
+                    1 \cdot (\beta_0 + \beta_1 \cdot 1+ \beta_2 \cdot 1) \geq M(1-\varepsilon_i)
+                \]
+            </li>
+            <li>
+                Untuk \(y_i=1: (2,2)\)
+                \[
+                    1 \cdot (\beta_0 + \beta_1 \cdot 2 + \beta_2 \cdot 2) \geq M(1-\varepsilon_i)
+                \]
+            </li>
+            <li>
+                Untuk \(y_i=-1: (3,4)\)
+                \[
+                    -1 \cdot (\beta_0 + \beta_1 \cdot 3 + \beta_2 \cdot 4) \geq M(1-\varepsilon_i)
+                \]
+            </li>
+            <li>
+                Untuk \(y_i=-1: (4,3)\)
+                \[
+                    -1 \cdot (\beta_0 + \beta_1 \cdot 4 + \beta_2 \cdot 3) \geq M(1-\varepsilon_i)
+                \]
+            </li>
+        </ol>
+
+        Normalisasi:
+        \[
+            \beta_1^2 + \beta_2^2 = 1
+        \]
+
+        <p>
+            Menentukan kapasitas \(C\):
+            <br>
+            Misalkan kita pilih \(C = 1\), artinya total kesalahan \((\sum_{i=1}^{n} \varepsilon_i)\) tidak boleh lebih dari 1.
+        </p>
+
+        <p>
+            Inisialisasi Parameter:
+            <br>
+            Mulai dengan nilai awal untuk \( \beta_0, \beta_1, \beta_2, M, \) dan \( \epsilon_i \). Misalnya:
+
+            \[
+            \beta_0 = 0, \quad \beta_1 = 1, \quad \beta_2 = 0, \quad M = 0, \quad \epsilon_1 = \epsilon_2 = \epsilon_3 = \epsilon_4 = 0
+            \]
+        </p>
+
+        <p>
+            Hitung Margin:
+            <ol>
+                <li>Untuk \( (1,1) \):</li>
+            </ol>
+            
+            \[
+            \beta_0 + \beta_1 \cdot 1 + \beta_2 \cdot 1 = 0 + 1 \cdot 1 + 0 \cdot 1 = 1
+            \]
+            
+            \(\qquad\) Margin: \(1 \geq M(1 - \epsilon_1)\)
+            
+            <ol start="2">
+                <li>Untuk \( (2,2) \):</li>
+            </ol>
+            
+            \[
+            \beta_0 + \beta_1 \cdot 2 + \beta_2 \cdot 2 = 0 + 1 \cdot 2 + 0 \cdot 2 = 2
+            \]
+            
+            \(\qquad\) Margin: \(2 \geq M(1 - \epsilon_2)\)
+            
+            <ol start="3">
+                <li>Untuk \( (3,4) \):</li>
+            </ol>
+            
+            \[
+            -\beta_0 - \beta_1 \cdot 3 - \beta_2 \cdot 4 = -0 - 1 \cdot 3 - 0 \cdot 4 = -3
+            \]
+            
+            \(\qquad\) Margin: \(-3 \geq M(1 - \epsilon_3)\)
+            
+            <ol start="4">
+                <li>Untuk \( (4,3) \):</li>
+            </ol>
+            
+            \[
+            -\beta_0 - \beta_1 \cdot 4 - \beta_2 \cdot 3 = -0 - 1 \cdot 4 - 0 \cdot 3 = -4
+            \]
+            
+            \(\qquad\) Margin: \(-4 \geq M(1 - \epsilon_4)\)
+        </p>
+        <p>
+            Update parameter:
+            <br>
+            Gunakan metode optimisasi (misalnya, gradient descent) untuk memperbarui nilai \(\beta_0, \beta_1, \beta_2, M, \text{dan} \ \varepsilon_i\).
+            Untuk memaksimalkan \(M\) sambil memenuhi syarat normalisasi dan nilai \(C\).
+        </p>
+        
+        Iterasi:
+        <br>
+        Ulangi Langkah <b>hitung margin</b> dan <b>update parameter</b> sampai konvergensi (nilai \(M\) tidak berubah signifikan).
+        <p>
+            Hasil akhir:
+            <br>
+            Setelah iterasi misal kita peroleh solusi:
+
+            \[
+                \beta_0 = 1, \quad \beta_1 = 2, \quad \beta_2 = -3, \quad M = 1, \quad \epsilon_1 = 0, \quad \epsilon_2 = 0, \quad \epsilon_3 = 0.5, \quad \epsilon_4 = 0.5
+            \]
+        </p>
+        Setelah hyperplane ditemukan, kita dapat mengklasifikasikan observasi baru \(x^*\) berdasarkan posisinya relatif terhadap hyperplane. 
+        <br>
+        Caranya adalah dengan menghitung:
+        \[
+            f(x^*) = \beta_0 + \beta_1 x^*_1 + \beta_2 x^*_2 + \dots + \beta_p x^*_p
+        \]
+        <ul>
+            <li>
+                Jika \(f(x^*) \geq 0\), bservasi diklasifikasikan sebagai kelas +1.
+            </li>
+            <li>
+                Jika \(f(x^*) \leq 0\), bservasi diklasifikasikan sebagai kelas -1.
+            </li>
+        </ul>
+        <ul>
+            <li>
+                Nilai \(C\): mengontrol trade-off antara memaksimalkan margin dan meminimalkan kesalahan klasifikasi.
+            </li>
+            <li>
+                Slack variables \((\varepsilon_i)\): mengukur sejauh mana titik data melanggar margin atau hyperplane.
+            </li>
+            <li>
+                Margin \(M\):  jarak antara hyperplane dan titik data terdekat dari kedua kelas untuk mengukur seberapa baik hyperplane memisahkan dua kelas.
+            </li>
+        </ul>
+    </p>
+</body> 
+</html>
